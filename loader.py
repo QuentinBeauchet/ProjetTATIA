@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from pandas.core.frame import DataFrame
 import requests
-import loader
+import concurrent.futures
 from math import ceil
 urlTemplate = "https://www.allocine.fr/film/fichefilm-x/critiques/spectateurs/?page="
 
@@ -43,3 +43,17 @@ def generateTheNumber(myStr):
         if myStr[i].isdigit():
             tempStr += myStr[i]
     return int(tempStr)
+
+#Methode la plus rapide
+def loadPages(idFilm,n):
+    urls = ["https://www.allocine.fr/film/fichefilm-%s/critiques/spectateurs/?page=%s" % (idFilm, x) for x in range(n)]
+    df = DataFrame(columns= ["Note","Commentaire"])
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+        results = pool.map(loadPage, urls)
+        for index, html in enumerate(results):
+            print("Page %s/%s" % (index+1,n), end="\r")
+            for el in html.find_all('div', class_="review-card-review-holder"):
+                df = df.append({
+                    "Note" : el.find('span',{'class': 'stareval-note'}).text,
+                    "Commentaire" : el.find('div', class_="review-card-content").text}, ignore_index=True)
+    return df
