@@ -62,7 +62,7 @@ def loadPages(idFilm,n):
     return df
 
 def saveDf(df, idFilm):
-    df.to_csv("data/"+str(idFilm)+".csv", encoding='utf-8')
+    df.to_csv("data/"+str(idFilm)+".csv", index=False, encoding='utf-8')
 
 def loadCsv(path):
     return pd.read_csv(path)
