@@ -4,6 +4,7 @@ from pandas.core.frame import DataFrame
 import requests
 import concurrent.futures
 from math import ceil
+
 urlTemplate = "https://www.allocine.fr/film/fichefilm-x/critiques/spectateurs/?page="
 
 def loadAll(idFilm):
