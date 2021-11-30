@@ -19,6 +19,7 @@ def loadnFirstPages(idFilm, n):
     for i in range(0, n):
         myDf = loadFile(urlTemp + str(i+1), myDf)
         print(str(i+1) +"/"+str(n) + " pages récupérés", end="\r")
+    saveDf(myDf,idFilm)
     return myDf
 
 def loadFile(httpStr, myDf):
@@ -56,4 +57,11 @@ def loadPages(idFilm,n):
                 df = df.append({
                     "Note" : el.find('span',{'class': 'stareval-note'}).text,
                     "Commentaire" : el.find('div', class_="review-card-content").text}, ignore_index=True)
+    saveDf(df, idFilm)
     return df
+
+def saveDf(df, idFilm):
+    df.to_csv("data/"+str(idFilm)+".csv", encoding='utf-8')
+
+def loadCsv(path):
+    return pd.read_csv(path)

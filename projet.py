@@ -1,10 +1,8 @@
-from itertools import count
-import nltk
 import loader
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import dataMaker
 
-df = loader.loadPages(9393, 5)
+df = loader.loadCsv("data/9393.csv")
 
 sid = SentimentIntensityAnalyzer()
 
