@@ -57,7 +57,7 @@ def loadPages(idFilm,n):
             for el in html.find_all('div', class_="review-card-review-holder"):
                 df = df.append({
                     "Note" : el.find('span',{'class': 'stareval-note'}).text,
-                    "Commentaire" : el.find('div', class_="review-card-content").text}, ignore_index=True)
+                    "Commentaire" : el.find('div', class_="review-card-content").text.strip()}, ignore_index=True)
     saveDf(df, idFilm)
     return df
 
