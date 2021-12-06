@@ -4,6 +4,8 @@ from pandas.core.frame import DataFrame
 import requests
 import concurrent.futures
 from math import ceil
+import csv
+import json
 
 urlTemplate = "https://www.allocine.fr/film/fichefilm-x/critiques/spectateurs/?page="
 
@@ -66,3 +68,12 @@ def saveDf(df, idFilm):
 
 def loadCsv(path):
     return pd.read_csv(path)
+
+def csvToJson(path):
+    csvfile = open(path, 'r')
+    outputDict = {}
+    rows = csvfile.read().split("\n")
+    for row in rows:
+        myRowTemp = row.split(";")
+        outputDict[myRowTemp[1]] = {"id":myRowTemp[0], "polarity":myRowTemp[2], "joy":myRowTemp[3], "fear":myRowTemp[4], "sadness":myRowTemp[5], "anger":myRowTemp[6], "surprise":myRowTemp[7], "disgust":myRowTemp[8]}
+    return outputDict
