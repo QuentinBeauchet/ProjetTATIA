@@ -61,11 +61,11 @@ def loadData():
         neutral.append(neu)
         noteFilm.append(note)
         precisionFilm.append(precision)
-    df["positive"] = positive
-    df["negative"] = negative
-    df["neutral"] = neutral
-    df["note"] = noteFilm
-    df["precision"] = precisionFilm
+    df["Positive"] = positive
+    df["Negative"] = negative
+    df["Neutral"] = neutral
+    df["Note estimé"] = noteFilm
+    df["Precision"] = precisionFilm
     # TODO difference note réele et estimé
     print(df)
 
