@@ -69,15 +69,3 @@ def analyse(idFilm):
     return checkResults(df)
 
 
-'''
-#print(stemmer.stem('aimerons'))
-import csv
-f= open (r"data/FEEL.csv")
-myReader = csv.reader(f)
-myArr = []
-for row in myReader:
-    row[1] = stemmer.stem(row[1])
-    row.pop(0)
-    myArr.append(row)
-
-pd.DataFrame(myArr).to_csv('data/FEEL.csv')'''
