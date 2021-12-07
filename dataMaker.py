@@ -39,7 +39,7 @@ def fetchData():
         nom = data["Nom"][index]
         df = df.append({"Nom": nom, "ID": id,
                        "Note": loadPages(id, nom)}, ignore_index=True)
-    df.to_csv(f"data/data.csv", index=False, encoding='utf-8')
+    df.to_csv("data/data.csv", index=False, encoding='utf-8')
     return df
 
 
@@ -54,21 +54,21 @@ def loadData():
         FN_.append(FN)
         NEU_.append(NEU)
         Note_.append(note)
-        Difference_.append(note - df["Note"][index])
+        Difference_.append(round(note - df["Note"][index], 3))
         Precision_.append(precision)
     df["TP"] = TP_
     df["FP"] = FP_
-    df["NEU"] = NEU_
     df["TN"] = TN_
     df["FN"] = FN_
     df["NEU"] = NEU_
     df["Note Estimé"] = Note_
     df["Difference"] = Difference_
     df["Precision"] = Precision_
+    df.to_csv("data/analysis.csv", index=False, encoding='utf-8')
     print(df)
 
     stats = DataFrame({"Precision": [df["Precision"].mean(), df["Precision"].min(), df["Precision"].max()],
-                       "Difference": [df["Difference"].mean(), df["Difference"].min(), df["Difference"].max()]},
+                       "Difference": [df["Difference"].mean(), df["Difference"].abs().min(), df["Difference"].abs().max()]},
                       index=['Moyenne',
                              'Min',
                              'Max'])
