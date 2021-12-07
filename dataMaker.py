@@ -58,6 +58,7 @@ def loadData():
         Precision_.append(precision)
     df["TP"] = TP_
     df["FP"] = FP_
+    df["NEU"] = NEU_
     df["TN"] = TN_
     df["FN"] = FN_
     df["NEU"] = NEU_

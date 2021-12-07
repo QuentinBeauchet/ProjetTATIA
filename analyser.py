@@ -1,5 +1,6 @@
 from nltk import RegexpTokenizer
 import pandas as pd
+from nltk.stem.snowball import FrenchStemmer
 
 
 def initData():
@@ -12,12 +13,14 @@ def initData():
 
 polarityData = initData()
 tokenizer = RegexpTokenizer(r'''\w'|\w+|[^\w\s]''')
+stemmer = FrenchStemmer()
 
 
 def getPolarity(text):
     textTokenized = tokenizer.tokenize(text)
     polarityTotal = 0
     for word in textTokenized:
+        word = stemmer.stem(word)
         if word in polarityData.keys():
             polarity = polarityData[word]
             if polarity == "positive":
