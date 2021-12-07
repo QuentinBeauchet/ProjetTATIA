@@ -57,9 +57,8 @@ def checkResults(df):
                 FN += 1
         else:
             NEU += 1
-    pos = TP + FP
     neg = TN + FN
-    noteFilm = round(((pos - neg*3)/(pos + neg*3)) * 5, 3)
+    noteFilm = round(((TP + FP - neg*3 - NEU)/(TP + FP + neg*3 + NEU)) * 5, 3)
     precision = round(((TP + TN)/(TP + TN + FP + FN + NEU))*100, 2)
     return (TP, TN, FP, FN, NEU, noteFilm, precision)
 
