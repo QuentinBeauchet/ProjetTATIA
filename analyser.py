@@ -39,22 +39,26 @@ def setSentiment(df):
 
 
 def checkResults(df):
-    correct, pos, neg, neu = 0, 0, 0, 0
+    TP, TN, FP, FN, NEU = 0, 0, 0, 0, 0
     for index, row in df.iterrows():
         note = float(row["Note"])
         if row['sentiment'] == "positive":
-            if note > 2.5:
-                correct += 1
-            pos += 1
+            if note >= 2.5:
+                TP += 1
+            else:
+                FP += 1
         elif row['sentiment'] == "negative":
             if note < 2.5:
-                correct += 1
-            neg += 1
+                TN += 1
+            else:
+                FN += 1
         else:
-            neu += 1
+            NEU += 1
+    pos = TP + FP
+    neg = TN + FN
     noteFilm = round(((pos - neg*3)/(pos + neg*3)) * 5, 3)
-    precision = round((correct*100)/(len(df.index)), 2)
-    return (pos, neg, neu, noteFilm, precision)
+    precision = round(((TP + TN)/(TP + TN + FP + FN + NEU))*100, 2)
+    return (TP, TN, FP, FN, NEU, noteFilm, precision)
 
 
 def analyse(idFilm):

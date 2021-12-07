@@ -32,16 +32,8 @@ def loadPage(httpStr):
     return BeautifulSoup(r.text, features="html.parser")
 
 
-# TODO mettre data dans un json ?
-data = {
-    9393: "LA LISTE DE SCHINDLER",
-    267546: "À COUTEAUX TIRÉS",
-    265573: "RENDEZ-VOUS CHEZ LES MALAWAS",
-    248191: "KAAMELOTT – PREMIER VOLET"
-}
-
-
 def fetchData():
+    data = pd.read_csv("data/input.csv")
     df = DataFrame(columns=["Nom", "ID", "Note"])
     for id in data.keys():
         print(f"Film: {data[id]}")
@@ -53,19 +45,22 @@ def fetchData():
 
 def loadData():
     df = pd.read_csv("data/data.csv")
-    positive, negative, neutral, noteFilm, precisionFilm = [], [], [], [], []
-    for id in data.keys():
-        pos, neg, neu, note, precision = analyser.analyse(id)
-        positive.append(pos)
-        negative.append(neg)
-        neutral.append(neu)
-        noteFilm.append(note)
-        precisionFilm.append(precision)
-    df["Positive"] = positive
-    df["Negative"] = negative
-    df["Neutral"] = neutral
-    df["Note estimé"] = noteFilm
-    df["Precision"] = precisionFilm
+    TP_, FP_, TN_, FN_, NEU_, Note_, Precision_ = [], [], [], [], [], [], []
+    for id in df["ID"]:
+        TP, TN, FP, FN, NEU, note, precision = analyser.analyse(id)
+        TP_.append(TP)
+        TN_.append(TN)
+        FP_.append(FP)
+        FN_.append(FN)
+        NEU_.append(NEU)
+        Note_.append(note)
+        Precision_.append(precision)
+    df["TP"] = TP_
+    df["FP"] = FP_
+    df["TN"] = TN_
+    df["FN"] = FN_
+    df["Note Estimé"] = Note_
+    df["Precision"] = Precision_
     # TODO difference note réele et estimé
     print(df)
 
