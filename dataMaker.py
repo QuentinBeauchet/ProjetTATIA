@@ -67,9 +67,10 @@ def loadData():
     df.to_csv("data/analysis.csv", index=False, encoding='utf-8')
     print(df)
 
-    stats = DataFrame({"Precision": [df["Precision"].mean(), df["Precision"].min(), df["Precision"].max()],
-                       "Difference": [df["Difference"].mean(), df["Difference"].abs().min(), df["Difference"].abs().max()]},
+    stats = DataFrame({"Precision": [df["Precision"].mean(), df["Precision"].median(), df["Precision"].min(), df["Precision"].max()],
+                       "Difference": [df["Difference"].abs().mean(), df["Difference"].abs().median(), df["Difference"].abs().min(), df["Difference"].abs().max()]},
                       index=['Moyenne',
+                             'Median',
                              'Min',
                              'Max'])
     print(stats)
