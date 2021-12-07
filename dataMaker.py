@@ -4,11 +4,12 @@ from pandas.core.frame import DataFrame
 import requests
 import concurrent.futures
 from math import ceil
+from tqdm import tqdm
 
 import analyser
 
 
-def loadPages(idFilm):
+def loadPages(idFilm, nom=""):
     n = ceil(int("".join(loadPage(
         f"https://www.allocine.fr/film/fichefilm-{idFilm}/critiques/spectateurs").find_all(
         'h2', class_='titlebar-title titlebar-title-md')[0].text.split()[:-2]))/15)
@@ -17,8 +18,7 @@ def loadPages(idFilm):
     df = DataFrame(columns=["Note", "Commentaire"])
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
         results = pool.map(loadPage, urls)
-        for index, html in enumerate(results):
-            print("Page: %s/%s" % (index+1, n), end="\r")
+        for index, html in tqdm(enumerate(results), total=n, desc=nom):
             for el in html.find_all('div', class_="review-card-review-holder"):
                 df = df.append({
                     "Note": float(el.find('span', {'class': 'stareval-note'}).text.replace(',', '.')),
@@ -35,18 +35,18 @@ def loadPage(httpStr):
 def fetchData():
     data = pd.read_csv("data/input.csv")
     df = DataFrame(columns=["Nom", "ID", "Note"])
-    for id in data.keys():
-        print(f"Film: {data[id]}")
-        df = df.append({"Nom": data[id], "ID": id,
-                       "Note": loadPages(id)}, ignore_index=True)
+    for index, id in tqdm(data["ID"].items(), total=len(data.index), desc='Total'):
+        nom = data["Nom"][index]
+        df = df.append({"Nom": nom, "ID": id,
+                       "Note": loadPages(id, nom)}, ignore_index=True)
     df.to_csv(f"data/data.csv", index=False, encoding='utf-8')
     return df
 
 
 def loadData():
     df = pd.read_csv("data/data.csv")
-    TP_, FP_, TN_, FN_, NEU_, Note_, Precision_ = [], [], [], [], [], [], []
-    for id in df["ID"]:
+    TP_, FP_, TN_, FN_, NEU_, Note_, Difference_, Precision_ = [], [], [], [], [], [], [], []
+    for index, id in tqdm(df["ID"].items(), total=len(df.index), desc='Analyse'):
         TP, TN, FP, FN, NEU, note, precision = analyser.analyse(id)
         TP_.append(TP)
         TN_.append(TN)
@@ -54,15 +54,24 @@ def loadData():
         FN_.append(FN)
         NEU_.append(NEU)
         Note_.append(note)
+        Difference_.append(note - df["Note"][index])
         Precision_.append(precision)
     df["TP"] = TP_
     df["FP"] = FP_
     df["TN"] = TN_
     df["FN"] = FN_
+    df["NEU"] = NEU_
     df["Note Estimé"] = Note_
+    df["Difference"] = Difference_
     df["Precision"] = Precision_
-    # TODO difference note réele et estimé
     print(df)
+
+    stats = DataFrame({"Precision": [df["Precision"].mean(), df["Precision"].min(), df["Precision"].max()],
+                       "Difference": [df["Difference"].mean(), df["Difference"].min(), df["Difference"].max()]},
+                      index=['Moyenne',
+                             'Min',
+                             'Max'])
+    print(stats)
 
 
 # fetchData()
