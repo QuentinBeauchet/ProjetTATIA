@@ -1,6 +1,7 @@
+import nltk
 from nltk import RegexpTokenizer
 import pandas as pd
-
+from nltk.stem.snowball import FrenchStemmer
 
 def initData():
     df = pd.read_csv("data/FEEL.csv")
@@ -12,12 +13,13 @@ def initData():
 
 polarityData = initData()
 tokenizer = RegexpTokenizer(r'''\w'|\w+|[^\w\s]''')
-
+stemmer = FrenchStemmer()
 
 def getPolarity(text):
     textTokenized = tokenizer.tokenize(text)
     polarityTotal = 0
     for word in textTokenized:
+        word = stemmer.stem(word)
         if word in polarityData.keys():
             polarity = polarityData[word]
             if polarity == "positive":
@@ -65,3 +67,17 @@ def analyse(idFilm):
     df = pd.read_csv(f"data/{idFilm}.csv")
     setSentiment(df)
     return checkResults(df)
+
+
+'''
+#print(stemmer.stem('aimerons'))
+import csv
+f= open (r"data/FEEL.csv")
+myReader = csv.reader(f)
+myArr = []
+for row in myReader:
+    row[1] = stemmer.stem(row[1])
+    row.pop(0)
+    myArr.append(row)
+
+pd.DataFrame(myArr).to_csv('data/FEEL.csv')'''

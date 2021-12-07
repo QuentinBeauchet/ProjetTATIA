@@ -57,13 +57,15 @@ def loadData():
         Precision_.append(precision)
     df["TP"] = TP_
     df["FP"] = FP_
+    df["NEU"] = NEU_
     df["TN"] = TN_
     df["FN"] = FN_
     df["Note Estimé"] = Note_
     df["Precision"] = Precision_
     # TODO difference note réele et estimé
+    pd.set_option('max_columns', None)
     print(df)
 
 
-# fetchData()
+#fetchData()
 loadData()
