@@ -17,16 +17,10 @@ stemmer = FrenchStemmer()
 
 
 def getPolarity(text):
-    textTokenized = tokenizer.tokenize(text)
+    textTokenized = detectNegative(tokenizer.tokenize(text))
     polarityTotal = 0
     for word in textTokenized:
-        word = stemmer.stem(word)
-        if word in polarityData.keys():
-            polarity = polarityData[word]
-            if polarity == "positive":
-                polarityTotal += 1
-            if polarity == "negative":
-                polarityTotal -= 1
+        polarityTotal = polarityTotal + calculatePolarity(word)
     if polarityTotal > 0:
         return "positive"
     if polarityTotal < 0:
@@ -59,9 +53,40 @@ def checkResults(df):
             NEU += 1
     pos = TP + FP
     neg = TN + FN
-    noteFilm = round(((pos - neg*3)/(pos + neg*3)) * 5, 3)
-    precision = round(((TP + TN)/(TP + TN + FP + FN + NEU))*100, 2)
+    noteFilm = round(((pos - neg * 3) / (pos + neg * 3)) * 5, 3)
+    precision = round(((TP + TN) / (TP + TN + FP + FN + NEU)) * 100, 2)
     return (TP, TN, FP, FN, NEU, noteFilm, precision)
+
+
+def calculatePolarity(word):
+    negative = False
+    if "NOT_" in word:
+        negative = True
+        word = word.split("_")[1]
+    if word in polarityData.keys():
+        polarity = polarityData[word]
+        #print(word + " "+ polarity + " neg ?"+str(negative))
+        if polarity == "positive":
+            if negative: return -1
+            return 1
+        if polarity == "negative":
+            if negative: return 1
+            return -1
+    return 0
+
+
+def detectNegative(textTokenized):
+    negationWords = ["pas", "plus"]
+    for i in range(len(textTokenized)):
+        word = stemmer.stem(textTokenized[i])
+        textTokenized[i] = word
+        if (textTokenized[i] in negationWords):
+            textTokenized[i] = "NOT_" + textTokenized[i]
+            if i < len(textTokenized) - 1:
+                textTokenized[i + 1] = "NOT_" + textTokenized[i + 1]
+            if i > 0:
+                textTokenized[i - 1] = "NOT_" + textTokenized[i - 1]
+    return textTokenized
 
 
 def analyse(idFilm):
